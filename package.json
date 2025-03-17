@@ -15,8 +15,10 @@
     "@mui/icons-material": "^6.4.7",
     "@mui/material": "^6.4.6",
     "grid": "^4.10.8",
+    "jspdf": "^2.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-pdf": "^9.2.1",
     "react-router-dom": "^6.29.0",
     "react-slick": "^0.30.3",
     "slick-carousel": "^1.8.1"

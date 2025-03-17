@@ -1,14 +1,13 @@
-import { AppBar, Toolbar, Typography, IconButton, Box, Grid, Card, CardMedia, Button, Divider } from "@mui/material";
+import { AppBar, Toolbar, Typography, IconButton, Box, Grid, Card, CardMedia, Button, Divider, TextField, InputAdornment, SearchIcon} from "@mui/material";
 import { Search, ChatBubbleOutline } from "@mui/icons-material";
 import  BestBooksCard  from "./../components/bestBooksCard.tsx"
+import BooksCard from "./../components/booksCard.tsx"
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
-
-
+import Imagem from "../assets/bookImage.png"
 const books = [
-  { id: 1, title: "É assim que acaba", image: "../assets/bookImage.png" },
+  { id: 1, title: "É assim que acaba", image: Imagem },
   { id: 2, title: "É assim que acaba", image: "./bookImage.png" },
   { id: 3, title: "É assim que acaba", image: "./bookImage.png" }
 ];
@@ -73,18 +72,46 @@ export default function Home() {
       >
         ⬇ Continue navegando
       </Button>
-      <Box sx={{ backgroundColor: "#F8F2E9", minHeight: "100vh", textAlign: "start" }}>
-        <Box sx={{   alignItems: 'center' }}>
+      <Box sx={{ backgroundColor: "#F8F2E9", minHeight: "100vh" }}>
+          <Box sx={{ alignItems:"center", display:"flex" }}>
           <Typography color="#6C5F56" fontSize="15px" fontWeight="bold">Melhores Livros</Typography>
           <Divider sx={{ marginBottom: 2, backgroundColor: "#384D6D", borderRadious:"3" }} ></Divider>
-        </Box>
- {/* Carrossel de BestBooksCard */}
- <Slider {...settings}>
+          </Box> 
+          {/* Carrossel de BestBooksCard */}
+         <Slider {...settings}>
         {books.map((book) => (
           <BestBooksCard key={book.id} title={book.title} image={book.image} publisher="aaaaaaaaa" author={book.title}  />
         ))}
-      </Slider>      </Box>
-      <img src="bookImage.png" alt="book image"/>
+      </Slider>
+      <Box sx={{ marginTop: 5}}>
+      <TextField
+          sx={{borderRadius: "100px", borderColor: '#E1D5C9'}}
+          variant="outlined"
+          fullWidth
+          InputProps={{
+          startAdornment: (
+          <IconButton
+            edge="start"
+            sx={{
+              backgroundColor: '#E1D5C9', 
+              color: '#6C5F56',              
+              borderRadius: '50%',         
+              padding: '8px',             
+          }}
+        >
+        <Search />
+      </IconButton>
+    ),
+  }}
+/>
+    </Box>
+      {/* Carrossel de BooksCard */}
+      <Slider {...settings}>
+        {books.map((book) => (
+          <BooksCard key={book.id} title={book.title} image={book.image} publisher="aaaaaaaaa" author={book.title}  />
+        ))}
+      </Slider>  
+      </Box>
     </Box>
   );
 };
