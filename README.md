@@ -1,50 +1,53 @@
-# React + TypeScript + Vite
+## Biblioteca de Livros - Documentação
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Esta biblioteca foi desenvolvida para exibir livros best-sellers utilizando a API do New York Times. O sistema permite buscar os livros mais vendidos e exibi-los em um carrossel interativo, além de contar com uma interface moderna e responsiva.
 
-Currently, two official plugins are available:
+### Stacks Utilizadas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Linguagem:** JavaScript (React)
+- **Framework UI:** Material-UI
+- **Bibliotecas Adicionais:**
+  - `react-slick` (Carrossel interativo)
+  - `slick-carousel` (Estilos do carrossel)
+- **Fonte de Dados:** API do New York Times
 
-## Expanding the ESLint configuration
+### Instalação
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Para utilizar o projeto, siga os passos abaixo:
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```sh
+git clone https://github.com/seu-repositorio/nome-do-projeto.git
+cd nome-do-projeto
+npm install
+npm start
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### Configuração
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+É necessário obter uma chave da API do New York Times. Para isso:
+1. Acesse [NY Times API](https://developer.nytimes.com/).
+2. Gere uma chave de API.
+3. Substitua `yourkey` no código pelo valor correto.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+### Funcionalidades
+
+#### 1. Buscar Best-Sellers
+A biblioteca consome a API do NY Times para obter uma lista atualizada dos livros mais vendidos.
+
+#### 2. Exibir Livros no Carrossel
+Os livros recuperados da API são exibidos em um carrossel interativo, permitindo a navegação fácil.
+
+#### 3. Interface Responsiva
+A interface foi projetada utilizando Material-UI para oferecer uma experiência agradável em diferentes dispositivos.
+
+### Requisitos
+
+- Node.js versão 16 ou superior
+- Chave de API do New York Times
+
+### Executando o Projeto
+
+```sh
+npm run dev
 ```
+
