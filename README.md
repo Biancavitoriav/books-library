@@ -1,4 +1,4 @@
-## Biblioteca de Livros - Documentação
+## Biblioteca de Livros
 
 Esta biblioteca foi desenvolvida para exibir livros best-sellers utilizando a API do New York Times. O sistema permite buscar os livros mais vendidos e exibi-los em um carrossel interativo, além de contar com uma interface moderna e responsiva.
 
@@ -50,4 +50,4 @@ A interface foi projetada utilizando Material-UI para oferecer uma experiência 
 ```sh
 npm run dev
 ```
-
+- Documentação gerada por IA, créditos ao https://chatgpt.com/
