@@ -24,7 +24,6 @@ const BooksCard: React.FC<BestBooksCardProps> = ({ title, author, publisher, ima
                 </Typography>
                 <Typography color="#6C5F56" fontSize="13px">
                   {author}
-                  Colleen Hoover
                 </Typography>
               </CardContent>
             </Card>
