@@ -19,15 +19,24 @@ Para utilizar o projeto, siga os passos abaixo:
 git clone https://github.com/seu-repositorio/nome-do-projeto.git
 cd nome-do-projeto
 npm install
-npm start
 ```
 
-### Configuração
-
-É necessário obter uma chave da API do New York Times. Para isso:
+### Configuração Da .ENV
+1. Copie o modelo do arquivo ".env-example"
+2. Gere as duas chave de API e substitua as informações.
+   
+Como obter uma chave da API do New York Times. Para isso:
 1. Acesse [NY Times API](https://developer.nytimes.com/).
 2. Gere uma chave de API.
-3. Substitua `yourkey` no código pelo valor correto.
+
+Como obter uma chave da API da google. Para isso:
+1. Acesse  [Google Cloud Console](https://console.cloud.google.com/).
+2. Crie um novo projeto ou selecione um existente.
+3. No menu lateral, vá em "APIs e serviços" > "Credenciais".
+4. Clique em "Criar credencial" e selecione "Chave da API".
+5. Copie a chave gerada.
+
+
 
 ### Funcionalidades
 
@@ -46,8 +55,9 @@ A interface foi projetada utilizando Material-UI para oferecer uma experiência 
 - Chave de API do New York Times
 
 ### Executando o Projeto
-
+Rode os comando abaixo em terminais diferentes.
 ```sh
+py .\ApiChatGpt.py
 npm run dev
 ```
 - Documentação gerada por IA, créditos ao https://chatgpt.com/
