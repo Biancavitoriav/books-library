@@ -7,49 +7,73 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const yourkey = "yRrTMEJfjjAA0IheLbooBUalVfAAM7za";
-const urlBestSellers = `https://api.nytimes.com/svc/books/v3/lists/current/hardcover-fiction.json?api-key=${yourkey}`;
+const key = import.meta.env.VITE_NY_API_KEY;
+const urlBestSellers = `https://api.nytimes.com/svc/books/v3/lists/current/hardcover-fiction.json?api-key=${key}`;
 
 export default function Home() {
   const [books, setBooks] = useState([]);
   const [bestBooks, setBestBooks] = useState([]);
-
-  useEffect(() => {
-    async function fetchBestSellers() {
-      try {
-        const response = await fetch(urlBestSellers);
-        if (!response.ok) {
-          throw new Error(`Erro: ${response.status}`);
-        }
-        const data = await response.json();
-        const fetchedBooks = data.results.books.map((book, index) => ({
-          id: index + 1,
-          title: book.title,
-          image: book.book_image,
-          author: book.author,
-          publisher: book.publisher,
-        }));
-
-        setBooks(fetchedBooks);
-        setBestBooks(fetchedBooks.slice(0, 3));
-      } catch (error) {
-        console.error("Erro ao buscar os best sellers:", error);
-      }
-    }
-
-    fetchBestSellers();
-  }, []);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredBooks, setFilteredBooks] = useState([]);
 
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: false,
     speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
+    slidesToShow: 4,
+    slidesToScroll: 2,
   };
 
+ useEffect(() => {
+  async function fetchBestSellers() {
+    try {
+      const response = await fetch(urlBestSellers);
+      if (!response.ok) {
+        throw new Error(`Erro: ${response.status}`);
+      }
+      const data = await response.json();
+
+      const seenTitles = new Set();
+      const uniqueBooks = data.results.books.filter((book) => {
+        if (seenTitles.has(book.title)) return false;
+        seenTitles.add(book.title);
+        return true;
+      });
+
+      const fetchedBooks = uniqueBooks.map((book, index) => ({
+        id: index + 1,
+        title: book.title,
+        image: book.book_image,
+        author: book.author,
+        publisher: book.publisher,
+      }));
+
+      setBooks(fetchedBooks);
+    } catch (error) {
+      console.error("Erro ao buscar os best sellers:", error);
+    }
+  }
+
+  fetchBestSellers();
+}, []);
+
+
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setFilteredBooks(books);
+    } else {
+      const lowerTerm = searchTerm.toLowerCase();
+      const filtered = books.filter((book) =>
+        book.title.toLowerCase().includes(lowerTerm) ||
+        book.author.toLowerCase().includes(lowerTerm)
+      );
+      setFilteredBooks(filtered);
+      console.log(filtered)
+    }
+  }, [searchTerm, books]);
+
   return (
-    <Box sx={{ backgroundColor: "#F8F2E9", minHeight: "100vh", textAlign: "center" }}>
+    <Box sx={{ backgroundColor: "#F8F2E9" }}>
       {/* Navbar */}
       <AppBar position="static" sx={{ backgroundColor: "#D9C4AE", boxShadow: "none" }}>
         <Toolbar sx={{ justifyContent: "space-between" }}>
@@ -92,14 +116,14 @@ export default function Home() {
       </Slider>
 
       {/* Campo de pesquisa */}
-      <Box display="flex" alignItems="center" gap={1} width="100%">
+      <Box display="flex" alignItems="center" gap={1} width="100%" marginTop="30px">
         <TextField
+          onChange={(e) => setSearchTerm(e.target.value)}
           variant="outlined"
           fullWidth
           placeholder="Pesquisar"
           sx={{
             borderRadius: "100px",
-            backgroundColor: "#F8F4F1",
             "& .MuiOutlinedInput-root": {
               borderRadius: "100px",
               "& fieldset": { borderColor: "#E1D5C9" },
@@ -116,7 +140,8 @@ export default function Home() {
                   color: "#6C5F56",
                   borderRadius: "50%",
                   padding: "8px",
-                  marginLeft: "-8px",
+                  marginLeft: "8px",
+                  marginRight:"2px"
                 }}
               >
                 <Search />
@@ -130,18 +155,16 @@ export default function Home() {
         <Button variant="contained" sx={{ backgroundColor: "#EF6465", color: "white", borderRadius: "20px", minWidth: "90px", marginTop:"20px" }} startIcon={<Chat />}>
           Chat
         </Button>
-        <Button variant="contained" sx={{ backgroundColor: "#5A7096", color: "white", borderRadius: "20px", minWidth: "90px", marginTop:"20px" }} startIcon={<Tune />}>
-          Filtros
-        </Button>
+
       </Box>
 
       {/* Carrossel de BooksCard */}
-      <Box sx={{marginTop: "30px"}}>
-      <Slider {...settings}>
-        {books.map((book) => (
-          <BooksCard key={book.id} title={book.title} image={book.image} author={book.author} publisher={book.publisher} />
-        ))}
-      </Slider>
+      <Box sx={{ marginTop: "30px", px: 2 }}>
+        <Slider {...settings}>
+          {filteredBooks.map((book) => (
+          <BooksCard key={book.id} {...book} />
+            ))}
+        </Slider>
       </Box>
     </Box>
   );
