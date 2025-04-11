@@ -26,10 +26,10 @@ const ListMessage: React.FC<ListMessageProps> = ({ messages }) => {
         width:"100%",        
       }}
     >
-      {messages.map((message) => (
+      {messages.map((message, index) => (
         <Box
             
-          key={message.id}
+          key={message.id || index}
           sx={{
             maxWidth: "80%",
             marginRight: "30px",

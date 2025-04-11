@@ -89,7 +89,7 @@ export default function Home() {
 
       const newMessage: Message = {
         id: messages.length + 1,
-        text: data,
+        text: data.resposta,
         sender: "robo",
       };
 
