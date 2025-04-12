@@ -53,11 +53,16 @@ A interface foi projetada utilizando Material-UI para oferecer uma experiência 
 
 - Node.js versão 16 ou superior
 - Chave de API do New York Times
+- Bibliotecas baixadas: 
+    - flask
+    - flask_cors
+    - google.generativeai
+    (É possível instalar todas pelo terminal usando o pip install)
+
 
 ### Executando o Projeto
-Rode os comando abaixo em terminais diferentes.
+Rode os dois comando abaixo, cada um em um terminal diferente.
 ```sh
 py .\ApiChatGpt.py
 npm run dev
-```
-- Documentação gerada por IA, créditos ao https://chatgpt.com/
+``
