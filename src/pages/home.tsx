@@ -1,30 +1,4 @@
-<<<<<<< HEAD
 import { useState, useEffect } from "react";
-import { AppBar, Toolbar, Typography, IconButton, Box, Grid, Card, CardMedia, Button, Divider, TextField } from "@mui/material";
-import { Search, ChatBubbleOutline, Chat, Tune } from "@mui/icons-material";
-import BestBooksCard from "./../components/bestBooksCard.tsx";
-import BooksCard from "./../components/booksCard.tsx";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-
-const key = import.meta.env.VITE_NY_API_KEY;
-const urlBestSellers = `https://api.nytimes.com/svc/books/v3/lists/current/hardcover-fiction.json?api-key=${key}`;
-=======
-import {
-  Search,
-  ChatBubbleOutline,
-  RingVolume,
-  Height,
-} from "@mui/icons-material";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import arrow from "../assets/Arrow 1.png";
-import home from "../assets/book-square.png";
-import SendIcon from "@mui/icons-material/Send";
-import iconSearch from "../assets/search-normal.png"
-import iconMensage from "../assets/messages.png"
-import left from "../assets/left.png"
-import right from "../assets/right.png"
 import {
   AppBar,
   Toolbar,
@@ -36,66 +10,55 @@ import {
   CardMedia,
   Stack,
   Button,
-  Divider,
   Drawer,
-  Input,
   InputBase,
+  TextField,
 } from "@mui/material";
+import {
+  Search,
+  Chat,
+  Send as SendIcon,
+} from "@mui/icons-material";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import BestBooksCard from "./../components/bestBooksCard.tsx";
-import Slider from "react-slick";
+import BooksCard from "./../components/booksCard.tsx";
+import ListMessage from "../components/listMessage.tsx";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import {useState} from 'react'
-import ListMessage from "../components/listMessage.tsx";
-import bookImage from "../assets/bookImage.png"
+import Slider from "react-slick";
 
+import home from "../assets/book-square.png";
+import iconSearch from "../assets/search-normal.png";
+import iconMensage from "../assets/messages.png";
+import left from "../assets/left.png";
 
-
-const books = [
-  { id: 1, title: "É assim que acaba", image: "../assets/bookImage.png" },
-  { id: 2, title: "É assim que acaba", image: "./bookImage.png" },
-  { id: 3, title: "É assim que acaba", image: "./bookImage.png" }
-];
->>>>>>> 60951044d86e32ca43b023b4bc4573492e107174
+const key = import.meta.env.VITE_NY_API_KEY;
+const urlBestSellers = `https://api.nytimes.com/svc/books/v3/lists/current/hardcover-fiction.json?api-key=${key}`;
 
 export default function Home() {
   const [books, setBooks] = useState([]);
   const [bestBooks, setBestBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBooks, setFilteredBooks] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [messageChat, setMessageChat] = useState("");
+  const [toggleDrawer, setToggleDrawer] = useState(false);
 
   const settings = {
     dots: true,
-<<<<<<< HEAD
     infinite: false,
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 2,
-=======
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
   };
-
-  type Message = {
-    id: number;
-    text: string;
-    sender: string;
-  };
-
-  const [messages, setMessages] = useState<Message[]>([]);
-
-  const [messageChat, setMessageChat] = useState("");
 
   const handleAddMessage = async () => {
-    const newMessage: Message = {
+    const newMessage = {
       id: messages.length + 1,
       text: messageChat,
       sender: "You",
     };
-
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
     const question = messageChat;
     setMessageChat("");
 
@@ -105,198 +68,114 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          infos: question,
-        }),
+        body: JSON.stringify({ infos: question }),
         mode: "cors",
       });
       const data = await response.json();
-
-      const newMessage: Message = {
-        id: messages.length + 1,
+      const botResponse = {
+        id: messages.length + 2,
         text: data.resposta,
         sender: "robo",
       };
-
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      setMessageChat("");
+      setMessages((prev) => [...prev, botResponse]);
     } catch (error) {
       console.error("Erro ao buscar mensagem:", error);
     }
   };
 
-  const [toggleDrawer, setToggleDrawer] = useState(false);
-
-  const handleChangeMessage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeMessage = (event) => {
     setMessageChat(event.target.value);
   };
 
   const handleClickDrawer = () => {
     setToggleDrawer(!toggleDrawer);
->>>>>>> 60951044d86e32ca43b023b4bc4573492e107174
   };
 
- useEffect(() => {
-  async function fetchBestSellers() {
-    try {
-      const response = await fetch(urlBestSellers);
-      if (!response.ok) {
-        throw new Error(`Erro: ${response.status}`);
+  useEffect(() => {
+    async function fetchBestSellers() {
+      try {
+        const response = await fetch(urlBestSellers);
+        const data = await response.json();
+        const seen = new Set();
+        const uniqueBooks = data.results.books.filter((b) => {
+          if (seen.has(b.title)) return false;
+          seen.add(b.title);
+          return true;
+        });
+        const mappedBooks = uniqueBooks.map((b, idx) => ({
+          id: idx + 1,
+          title: b.title,
+          image: b.book_image,
+          author: b.author,
+          publisher: b.publisher,
+        }));
+        setBooks(mappedBooks);
+        setBestBooks(mappedBooks.slice(0, 5)); // Exibe os 5 primeiros na seção de destaque
+      } catch (e) {
+        console.error("Erro ao buscar best sellers:", e);
       }
-      const data = await response.json();
-
-      const seenTitles = new Set();
-      const uniqueBooks = data.results.books.filter((book) => {
-        if (seenTitles.has(book.title)) return false;
-        seenTitles.add(book.title);
-        return true;
-      });
-
-      const fetchedBooks = uniqueBooks.map((book, index) => ({
-        id: index + 1,
-        title: book.title,
-        image: book.book_image,
-        author: book.author,
-        publisher: book.publisher,
-      }));
-
-      setBooks(fetchedBooks);
-    } catch (error) {
-      console.error("Erro ao buscar os best sellers:", error);
     }
-  }
-
-  fetchBestSellers();
-}, []);
-
+    fetchBestSellers();
+  }, []);
 
   useEffect(() => {
     if (searchTerm.trim() === "") {
       setFilteredBooks(books);
     } else {
-      const lowerTerm = searchTerm.toLowerCase();
-      const filtered = books.filter((book) =>
-        book.title.toLowerCase().includes(lowerTerm) ||
-        book.author.toLowerCase().includes(lowerTerm)
+      const lower = searchTerm.toLowerCase();
+      const filtered = books.filter(
+        (b) =>
+          b.title.toLowerCase().includes(lower) ||
+          b.author.toLowerCase().includes(lower)
       );
       setFilteredBooks(filtered);
-      console.log(filtered)
     }
   }, [searchTerm, books]);
 
   return (
-<<<<<<< HEAD
-    <Box sx={{ backgroundColor: "#F8F2E9" }}>
-=======
-    <Box
-      sx={{
-        backgroundColor: "#F8F2E9",
-        minHeight: "100vh",
-        width: "100%",
-        textAlign: "center",
-      }}
-    >
->>>>>>> 60951044d86e32ca43b023b4bc4573492e107174
+    <Box sx={{ backgroundColor: "#F8F2E9", minHeight: "100vh", width: "100%", textAlign:"center" }}>
       {/* Navbar */}
-      <AppBar
-        position="static"
-        sx={{ backgroundColor: "#D9C4AE", boxShadow: "none" }}
-      >
+      <AppBar position="static" sx={{ backgroundColor: "#D9C4AE", boxShadow: "none" }}>
         <Toolbar sx={{ justifyContent: "space-between" }}>
-<<<<<<< HEAD
-          <Typography variant="h6" sx={{ color: "#4E3B2C", fontWeight: "bold" }}>📚 Biblioteca</Typography>
-=======
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <IconButton>
-              <img src={home} alt="" />
-            </IconButton>
-            <Typography
-              variant="h6"
-              sx={{ color: "#4E3B2C", fontWeight: "bold" }}
-            >
+          <Stack direction="row" spacing={2} alignItems="center">
+            <IconButton><img src={home} alt="home" /></IconButton>
+            <Typography variant="h6" sx={{ color: "#4E3B2C", fontWeight: "bold" }}>
               Biblioteca
             </Typography>
           </Stack>
->>>>>>> 60951044d86e32ca43b023b4bc4573492e107174
           <Box>
-            <IconButton>
-              <img src={iconSearch} />
-            </IconButton>
-            <IconButton onClick={handleClickDrawer}>
-              <img src={iconMensage} />
-            </IconButton>
+            <IconButton><img src={iconSearch} alt="search" /></IconButton>
+            <IconButton onClick={handleClickDrawer}><img src={iconMensage} alt="mensagem" /></IconButton>
           </Box>
         </Toolbar>
       </AppBar>
 
-      <Box
-        component="img"
-        src={left}
-        alt="Prateleira esquerda"
-        sx={{
-          position: "absolute",
-          left: 0,
-          top: "40%",
-          transform: "translateY(-50%)",
-          height: "30vh",
-        }}
-      />
+      {/* Drawer Chat */}
       <Drawer anchor="right" open={toggleDrawer} onClose={handleClickDrawer}>
-        <Box
-          sx={{
-            height: "63px",
-            width: "432px",
-            background: "#D9C4AE",
-            display: "flex",
-            alignItems: "center",
-            position: "fixed",
-            top: "0",
-            right: "0",
-          }}
-        >
-          <IconButton onClick={handleClickDrawer}>
-            <ArrowBackIosNewIcon />
-          </IconButton>
-          <Typography
-            sx={{
-              paddingTop: "5px",
-              fontSize: "25px",
-              fontWeight: "bold",
-              color: "#4E3B2C",
-            }}
-          >
+        <Box sx={{ height: "63px", width: "432px", background: "#D9C4AE", display: "flex", alignItems: "center" }}>
+          <IconButton onClick={handleClickDrawer}><ArrowBackIosNewIcon /></IconButton>
+          <Typography sx={{ fontSize: "25px", fontWeight: "bold", color: "#4E3B2C" }}>
             Robô
           </Typography>
         </Box>
-        <Box
-          sx={{
-            backgroundImage: "linear-gradient(to bottom, #F9F8F6, #D9C4AE)",
-            paddingTop: "63px",
-            paddingBottom: "163px",
-            overflow: "hidden",
-            height: "800px",
-            width: "432px",
-          }}
-        >
+        <Box sx={{
+          backgroundImage: "linear-gradient(to bottom, #F9F8F6, #D9C4AE)",
+          paddingTop: "63px",
+          paddingBottom: "163px",
+          overflow: "hidden",
+          height: "800px",
+          width: "432px"
+        }}>
           <ListMessage messages={messages} />
         </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            padding: "10px",
-            backgroundColor: "#D9C4AE",
-            boxShadow: "0 -1px 5px rgba(0,0,0,0.1)",
-            width: "412px",
-          }}
-        >
+        <Box sx={{
+          display: "flex",
+          alignItems: "center",
+          padding: "10px",
+          backgroundColor: "#D9C4AE",
+          boxShadow: "0 -1px 5px rgba(0,0,0,0.1)",
+          width: "412px"
+        }}>
           <InputBase
             sx={{
               flex: 1,
@@ -309,55 +188,66 @@ export default function Home() {
             value={messageChat}
             onChange={handleChangeMessage}
           />
-          <IconButton
-            sx={{
-              backgroundColor: "#4E3B2C",
-              color: "#fff",
-              borderRadius: "50%",
-              padding: "8px",
-            }}
-            onClick={handleAddMessage}
-          >
+          <IconButton onClick={handleAddMessage} sx={{ backgroundColor: "#4E3B2C", color: "#fff", borderRadius: "50%" }}>
             <SendIcon />
           </IconButton>
         </Box>
       </Drawer>
 
-      {/* Seção dos Livros do Mês */}
-<<<<<<< HEAD
-      <Box sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: "bold", color: "#4E3B2C" }}>Esse Mês</Typography>
-=======
-      <Box sx={{ mt: 25, mb: 4, height: 550 }}>
+      {/* Lateral esquerda decorativa */}
+      <Box component="img" src={left} alt="Prateleira esquerda" sx={{
+        position: "absolute", left: 0, top: "40%", transform: "translateY(-50%)", height: "30vh"
+      }} />
+
+       {/* Seção dos Livros do Mês */}
+       <Box sx={{ mt: 15, mb: 2, height: 550 }}>
         <Typography variant="h4" sx={{ fontWeight: "bold", color: "#4E3B2C" }}>
           Esse Mês
         </Typography>
->>>>>>> 60951044d86e32ca43b023b4bc4573492e107174
         <Typography variant="body1" sx={{ color: "#6E5843", mb: 4 }}>
           Conheça os melhores livros e os mais indicados do mês
         </Typography>
-
-<<<<<<< HEAD
-        <Grid container justifyContent="center" spacing={3}>
-          {bestBooks.map((book) => (
+        <Grid
+          container
+          justifyContent="center"
+          spacing={3}
+          display="flex"
+          flexDirection="row"
+        >
+          {bestBooks.slice(0, 3).map((book, index) => (
             <Grid item key={book.id}>
-              <Card sx={{ width: 150, backgroundColor: "transparent", boxShadow: "none" }}>
-                <CardMedia component="img" image={book.image} alt={book.title} sx={{ borderRadius: 2 }} />
+              <Card
+                sx={{
+                  width: index === 1 ? 200 : 180,
+                  backgroundColor: "transparent",
+                  boxShadow: "none",
+                  paddingTop: index === 1 ? "0" : "70px",
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  image={book.image}
+                  alt={book.title}
+                  sx={{ borderRadius: 2 }}
+                />
               </Card>
             </Grid>
           ))}
         </Grid>
       </Box>
 
-      {/* Carrossel de BestBooksCard */}
-      <Typography color="#6C5F56" fontSize="15px" fontWeight="bold">Melhores Livros</Typography>
+
+      {/* Melhores livros */}
+      <Typography color="#6C5F56" fontSize="15px" fontWeight="bold">
+        Melhores Livros
+      </Typography>
       <Slider {...settings}>
         {books.map((book) => (
           <BestBooksCard key={book.id} title={book.title} image={book.image} author={book.author} publisher={book.publisher} />
         ))}
       </Slider>
 
-      {/* Campo de pesquisa */}
+      {/* Campo de pesquisa e botão de chat */}
       <Box display="flex" alignItems="center" gap={1} width="100%" marginTop="30px">
         <TextField
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -383,7 +273,7 @@ export default function Home() {
                   borderRadius: "50%",
                   padding: "8px",
                   marginLeft: "8px",
-                  marginRight:"2px"
+                  marginRight: "2px"
                 }}
               >
                 <Search />
@@ -391,115 +281,27 @@ export default function Home() {
             ),
           }}
         />
-
-        {/* Botões */}
-        
-        <Button variant="contained" sx={{ backgroundColor: "#EF6465", color: "white", borderRadius: "20px", minWidth: "90px", marginTop:"20px" }} startIcon={<Chat />}>
+        <Button variant="contained" 
+        onClick={handleClickDrawer}
+        sx={{
+          backgroundColor: "#EF6465",
+          color: "white",
+          borderRadius: "20px",
+          minWidth: "90px",
+          marginTop: "20px"
+        }} startIcon={<Chat />}>
           Chat
         </Button>
-
       </Box>
 
-      {/* Carrossel de BooksCard */}
+      {/* Lista de livros filtrados */}
       <Box sx={{ marginTop: "30px", px: 2 }}>
         <Slider {...settings}>
           {filteredBooks.map((book) => (
-          <BooksCard key={book.id} {...book} />
-            ))}
+            <BooksCard key={book.id} {...book} />
+          ))}
         </Slider>
       </Box>
-=======
-        <Grid
-          container
-          justifyContent="center"
-          spacing={3}
-          display="flex"
-          flexDirection="row"
-        >
-          <Card
-            sx={{
-              width: 180,
-              backgroundColor: "transparent",
-              boxShadow: "none",
-              paddingTop: "20px",
-            }}
-          >
-            <CardMedia
-              component="img"
-              image={bookImage}
-              alt="Assim que acaba"
-              sx={{ borderRadius: 2 }}
-            />
-          </Card>
-
-          <Card
-            sx={{
-              width: 200,
-              backgroundColor: "transparent",
-              boxShadow: "none",
-            }}
-          >
-            <CardMedia
-              component="img"
-              image={bookImage}
-              alt="Assim que acaba"
-              sx={{ borderRadius: 2 }}
-            />
-          </Card>
-
-          <Card
-            sx={{
-              width: 180,
-              backgroundColor: "transparent",
-              boxShadow: "none",
-              paddingTop: "20px",
-            }}
-          >
-            <CardMedia
-              component="img"
-              image={bookImage}
-              alt="Assim que acaba"
-              sx={{ borderRadius: 2 }}
-            />
-          </Card>
-        </Grid>
-      </Box>
-
-      <Box
-        component="img"
-        src={right}
-        alt="Prateleira direita"
-        sx={{
-          position: "absolute",
-          right: 0,
-          top: "60%",
-          transform: "translateY(-50%)",
-          height: "40vh",
-        }}
-      />
-
-      {/* Botão de Navegação */}
-      <Box>
-        <Typography color="#6C5F56">Continue navegando</Typography>
-        <IconButton>
-          <img src={arrow} alt="" />
-        </IconButton>
-      </Box>
-
-
-      <Box sx={{ backgroundColor: "#F8F2E9", minHeight: "100vh", textAlign: "start" }}>
-        <Box sx={{   alignItems: 'center' }}>
-          <Typography color="#6C5F56" fontSize="15px" fontWeight="bold">Melhores Livros</Typography>
-          <Divider sx={{ marginBottom: 2, backgroundColor: "#384D6D", borderRadious:"3" }} ></Divider>
-        </Box>
- {/* Carrossel de BestBooksCard */}
- <Slider {...settings}>
-        {books.map((book) => (
-          <BestBooksCard key={book.id} title={book.title} image={book.image} publisher="aaaaaaaaa" author={book.title}  />
-        ))}
-      </Slider>      </Box>
-      <img src="bookImage.png" alt="book image"/>
->>>>>>> 60951044d86e32ca43b023b4bc4573492e107174
     </Box>
   );
 }
